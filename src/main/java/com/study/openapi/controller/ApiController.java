@@ -14,16 +14,24 @@ public class ApiController {
     final static String serviceKey = "9P3ZStYv6PIf0Wrl0Q1iUW4XbRNhDvmQza1aiD9AgGH1yjZb6H07V5p0iUN4ePSt1FUXthV0nJyg%2FTwtyOXXGA%3D%3D";
 
     @GetMapping(value = "get", produces = "application/json;charset=utf-8")
-    public String getData() throws Exception {
+    public String getData(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) throws Exception {
+//        http://localhost:8080/api/get?page=1&size=50 이런식으로 유기적으로 페이징 할 수 있음
+        int start = (page - 1) * size + 1;
+        int end = page * size;
+
         String url = "https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo";
         url += "?serviceKey=" + serviceKey;
-        url += "&numOfRows=10&pageNo=1";
+        url += "&numOfRows=" + size;
+        url += "&pageNo=" + page;
         url += "&resultType=json";
+
         URL requestURL = new URL(url);
 
         HttpURLConnection conn = (HttpURLConnection) requestURL.openConnection();
         conn.setRequestMethod("GET");
-        conn.setRequestProperty("Accept", "application/json");
 
         InputStream is = conn.getInputStream();
         InputStreamReader isr = new InputStreamReader(is);

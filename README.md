@@ -2,6 +2,7 @@
 
 공공데이터 금융위원회_주식시세정보
 
+#### 7/26 
 ![스크린샷 2024-07-26 오후 10 32 51](https://github.com/user-attachments/assets/b32dddd5-fb5b-4e75-96c2-778cc3afa83a)
 application/properties에 db없이 빌드가 되도록 설정을 해야한다
 

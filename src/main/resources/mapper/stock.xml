@@ -1,0 +1,18 @@
+<mapper namespace="com.example.stockdata.mapper.StockMapper">
+
+    <!-- Insert stock data -->
+    <insert id="insertStockData">
+        INSERT INTO stock_data (bas_dt, srtn_cd, isin_cd, itms_nm, mrkt_ctg, clpr, vs, flt_rt, mkp, hipr, lopr, trqu, tr_prc, lstg_st_cnt, mrkt_tot_amt)
+        VALUES (#{basDt}, #{srtnCd}, #{isinCd}, #{itmsNm}, #{mrktCtg}, #{clpr}, #{vs}, #{fltRt}, #{mkp}, #{hipr}, #{lopr}, #{trqu}, #{trPrc}, #{lstgStCnt}, #{mrktTotAmt})
+    </insert>
+
+    <!-- Batch insert stock data -->
+    <insert id="insertStockDataBatch">
+        INSERT INTO stock_data (bas_dt, srtn_cd, isin_cd, itms_nm, mrkt_ctg, clpr, vs, flt_rt, mkp, hipr, lopr, trqu, tr_prc, lstg_st_cnt, mrkt_tot_amt)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.basDt}, #{item.srtnCd}, #{item.isinCd}, #{item.itmsNm}, #{item.mrktCtg}, #{item.clpr}, #{item.vs}, #{item.fltRt}, #{item.mkp}, #{item.hipr}, #{item.lopr}, #{item.trqu}, #{item.trPrc}, #{item.lstgStCnt}, #{item.mrktTotAmt})
+        </foreach>
+    </insert>
+
+</mapper>

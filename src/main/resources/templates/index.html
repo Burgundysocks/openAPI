@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Data</title>
+    <style>
+        h1 {
+            width: 90%;
+            margin: 0 auto;
+        }
+        table {
+            width: 90%;
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+            font-size: 12px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .pagination {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .pagination button {
+            margin: 0 5px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f2f2f2;
+            cursor: pointer;
+        }
+
+        .pagination button.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .pagination button:disabled {
+            cursor: not-allowed;
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+<h1>Stock Data</h1>
+<table id="stockTable">
+    <thead>
+    <tr>
+        <th>기준일</th>
+        <th>단축 코드</th>
+        <th>ISIN 코드</th>
+        <th>종목명</th>
+        <th>시장 구분</th>
+        <th>종가</th>
+        <th>변동</th>
+        <th>변동률</th>
+        <th>시가</th>
+        <th>고가</th>
+        <th>저가</th>
+        <th>거래량</th>
+        <th>거래대금</th>
+        <th>상장 주식 수</th>
+        <th>시장 총액</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<div class="pagination" id="pagination">
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const totalItems = 10000;
+        const pageSize = 50;
+        const totalPages = Math.ceil(totalItems / pageSize);
+        let currentPage = 1;
+        const maxVisibleButtons = 10;
+
+        const apiUrl = "http://localhost:8080/api/get";
+        const stockTableBody = document.getElementById('stockTable').getElementsByTagName('tbody')[0];
+        const paginationDiv = document.getElementById('pagination');
+
+        function fetchStockData(page, size) {
+            fetch(`${apiUrl}?page=${page}&size=${size}`)
+                .then(response => response.json())
+                .then(data => {
+                    displayStockData(data.response.body.items.item);
+                    updatePagination(page);
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        function displayStockData(items) {
+            stockTableBody.innerHTML = '';
+            items.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${item.basDt}</td>
+                <td>${item.srtnCd}</td>
+                <td>${item.isinCd}</td>
+                <td>${item.itmsNm}</td>
+                <td>${item.mrktCtg}</td>
+                <td>${item.clpr}</td>
+                <td>${item.vs}</td>
+                <td>${item.fltRt}</td>
+                <td>${item.mkp}</td>
+                <td>${item.hipr}</td>
+                <td>${item.lopr}</td>
+                <td>${item.trqu}</td>
+                <td>${item.trPrc}</td>
+                <td>${item.lstgStCnt}</td>
+                <td>${item.mrktTotAmt}</td>
+            `;
+                stockTableBody.appendChild(row);
+            });
+        }
+
+        function updatePagination(page) {
+            paginationDiv.innerHTML = '';
+
+            const createButton = (pageNumber, isActive, isDisabled) => {
+                const button = document.createElement('button');
+                button.textContent = pageNumber;
+                button.disabled = isDisabled;
+                button.className = isActive ? 'active' : '';
+                button.addEventListener('click', () => {
+                    currentPage = pageNumber;
+                    fetchStockData(currentPage, pageSize);
+                });
+                return button;
+            };
+
+            const startPage = Math.floor((page - 1) / maxVisibleButtons) * maxVisibleButtons + 1;
+            const endPage = Math.min(startPage + maxVisibleButtons - 1, totalPages);
+
+            const previousSetButton = createButton('Previous', false, startPage === 1);
+            previousSetButton.addEventListener('click', () => {
+                if (startPage > 1) {
+                    currentPage = startPage - 1;
+                    fetchStockData(currentPage, pageSize);
+                }
+            });
+            paginationDiv.appendChild(previousSetButton);
+
+            for (let i = startPage; i <= endPage; i++) {
+                paginationDiv.appendChild(createButton(i, i === page, false));
+            }
+
+            const nextSetButton = createButton('Next', false, endPage === totalPages);
+            nextSetButton.addEventListener('click', () => {
+                if (endPage < totalPages) {
+                    currentPage = endPage + 1;
+                    fetchStockData(currentPage, pageSize);
+                }
+            });
+            paginationDiv.appendChild(nextSetButton);
+        }
+
+        fetchStockData(currentPage, pageSize);
+    });
+</script>
+</body>
+</html>
