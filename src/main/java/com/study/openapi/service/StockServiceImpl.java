@@ -1,8 +1,7 @@
-package com.study.openapi.service.impl;
+package com.study.openapi.service;
 
 import com.study.openapi.dto.StockDTO;
 import com.study.openapi.mapper.StockMapper;
-import com.study.openapi.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
